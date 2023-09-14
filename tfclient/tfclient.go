@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/go-plugin"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov5"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+	"github.com/magodo/go-wasmww"
 	"github.com/magodo/terraform-client-go/tfclient/tfprotov5/tf5client"
 	"github.com/magodo/terraform-client-go/tfclient/tfprotov6/tf6client"
 	"google.golang.org/grpc"
@@ -27,6 +28,7 @@ type Option struct {
 	// that is already running. This isn't common.
 	Cmd      *exec.Cmd
 	Reattach *plugin.ReattachConfig
+	WasmConn *wasmww.WasmWebWorkerConn
 
 	// SecureConfig is configuration for verifying the integrity of the
 	// executable. It can not be used with Reattach.
@@ -145,6 +147,7 @@ func newRaw(opts Option) (*RawClient, int, error) {
 		Logger:           opts.Logger,
 		AutoMTLS:         opts.AutoMTLS,
 		GRPCDialOptions:  opts.GRPCDialOptions,
+		WasmWorkerConn:   opts.WasmConn,
 	}
 
 	if reattach := opts.Reattach; reattach == nil {

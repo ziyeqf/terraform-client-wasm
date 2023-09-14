@@ -3,17 +3,17 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"net"
 	"os"
 	"os/exec"
-	"path/filepath"
+	"runtime"
 	"time"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	"github.com/magodo/go-wasmww"
 	"github.com/magodo/terraform-client-go/tfclient"
 	"github.com/magodo/terraform-client-go/tfclient/configschema"
 	"github.com/magodo/terraform-client-go/tfclient/typ"
@@ -38,6 +38,8 @@ func (pl *JSONPatches) Set(value string) error {
 }
 
 type FlagSet struct {
+	WasmName     string
+	WasmPath     string
 	PluginPath   string
 	ResourceType string
 	ResourceId   string
@@ -47,39 +49,23 @@ type FlagSet struct {
 	TimeoutSec   int
 }
 
-func main() {
-	var fset FlagSet
-	flag.StringVar(&fset.PluginPath, "path", "", "The path to the plugin")
-	flag.StringVar(&fset.ResourceType, "type", "", "The resource type")
-	flag.StringVar(&fset.ResourceId, "id", "", "The resource id")
-	flag.StringVar(&fset.LogLevel, "log-level", hclog.Error.String(), "Log level")
-	flag.StringVar(&fset.ProviderCfg, "cfg", "{}", "The content of provider config block in JSON")
-	flag.Var(&fset.StatePatches, "state-patch", "The JSON patch to the state after importing, which will then be used as the prior state for reading. Can be specified multiple times")
-	flag.IntVar(&fset.TimeoutSec, "timeout", 0, "Timeout in second. Defaults to no timeout.")
-
-	flag.Parse()
-
-	logger := hclog.New(&hclog.LoggerOptions{
-		Output: hclog.DefaultOutput,
-		Level:  hclog.LevelFromString(fset.LogLevel),
-		Name:   filepath.Base(fset.PluginPath),
-	})
-
-	if err := realMain(logger, fset); err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
-	}
-}
-
-func realMain(logger hclog.Logger, fset FlagSet) error {
+func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 	opts := tfclient.Option{
-		Cmd:    exec.Command(fset.PluginPath),
 		Logger: logger,
+	}
+
+	if runtime.GOOS == "js" && runtime.GOARCH == "wasm" {
+		opts.WasmConn = &wasmww.WasmWebWorkerConn{
+			Name: fset.WasmName,
+			Path: fset.WasmPath,
+		}
+	} else {
+		opts.Cmd = exec.Command(fset.PluginPath)
 	}
 
 	reattach, err := parseReattach(os.Getenv("TF_REATTACH_PROVIDERS"))
 	if err != nil {
-		return err
+		return "", err
 	}
 	if reattach != nil {
 		opts.Cmd = nil
@@ -88,7 +74,7 @@ func realMain(logger hclog.Logger, fset FlagSet) error {
 
 	c, err := tfclient.New(opts)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer c.Close()
 
@@ -101,19 +87,19 @@ func realMain(logger hclog.Logger, fset FlagSet) error {
 
 	schResp, diags := c.GetProviderSchema()
 	if err := showDiags(logger, diags); err != nil {
-		return err
+		return "", err
 	}
 
 	config, err := ctyjson.Unmarshal([]byte(fset.ProviderCfg), configschema.SchemaBlockImpliedType(schResp.Provider.Block))
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	_, diags = c.ConfigureProvider(ctx, typ.ConfigureProviderRequest{
 		Config: config,
 	})
 	if err := showDiags(logger, diags); err != nil {
-		return err
+		return "", err
 	}
 
 	importResp, diags := c.ImportResourceState(ctx, typ.ImportResourceStateRequest{
@@ -121,11 +107,11 @@ func realMain(logger hclog.Logger, fset FlagSet) error {
 		ID:       fset.ResourceId,
 	})
 	if err := showDiags(logger, diags); err != nil {
-		return err
+		return "", err
 	}
 
 	if len(importResp.ImportedResources) != 1 {
-		return fmt.Errorf("expect 1 resource, got=%d", len(importResp.ImportedResources))
+		return "", fmt.Errorf("expect 1 resource, got=%d", len(importResp.ImportedResources))
 	}
 	res := importResp.ImportedResources[0]
 
@@ -134,15 +120,15 @@ func realMain(logger hclog.Logger, fset FlagSet) error {
 		for _, patch := range fset.StatePatches {
 			b, err := ctyjson.Marshal(state, state.Type())
 			if err != nil {
-				return fmt.Errorf("marshalling the state: %v", err)
+				return "", fmt.Errorf("marshalling the state: %v", err)
 			}
 			nb, err := patch.Apply(b)
 			if err != nil {
-				return fmt.Errorf("patching the state %s: %v", string(b), err)
+				return "", fmt.Errorf("patching the state %s: %v", string(b), err)
 			}
 			state, err = ctyjson.Unmarshal(nb, state.Type())
 			if err != nil {
-				return fmt.Errorf("unmarshalling the patched state: %v", err)
+				return "", fmt.Errorf("unmarshalling the patched state: %v", err)
 			}
 		}
 	}
@@ -154,16 +140,15 @@ func realMain(logger hclog.Logger, fset FlagSet) error {
 		ProviderMeta: cty.Value{},
 	})
 	if err := showDiags(logger, diags); err != nil {
-		return err
+		return "", err
 	}
 
 	b, err := ctyjson.Marshal(readResp.NewState, configschema.SchemaBlockImpliedType(schResp.ResourceTypes[fset.ResourceType].Block))
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	fmt.Println(string(b))
-	return nil
+	return string(b), nil
 }
 
 func showDiags(logger hclog.Logger, diags typ.Diagnostics) error {

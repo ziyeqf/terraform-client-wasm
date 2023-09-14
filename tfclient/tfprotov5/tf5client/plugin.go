@@ -3,8 +3,9 @@ package tf5client
 import (
 	"context"
 	"errors"
-	"github.com/magodo/terraform-client-go/tfclient/tfprotov5/internal/tfplugin5"
 	"net/rpc"
+
+	"github.com/magodo/terraform-client-go/tfclient/tfprotov5/internal/tfplugin5"
 
 	"github.com/hashicorp/go-plugin"
 	"google.golang.org/grpc"
