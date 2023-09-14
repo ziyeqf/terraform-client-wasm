@@ -43,7 +43,7 @@ github.com/hack-pad/safejs/internal/stackerr
 # github.com/hashicorp/go-hclog v1.2.1
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
-# github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230913062358-3c3633fc1a1c
+# github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230914074008-4c286047f11a
 ## explicit; go 1.21.1
 github.com/hashicorp/go-plugin
 github.com/hashicorp/go-plugin/internal/plugin
@@ -71,7 +71,7 @@ github.com/hashicorp/yamux
 # github.com/magodo/chanio v0.0.0-20230905063744-5f1bf45eacbc
 ## explicit; go 1.21.0
 github.com/magodo/chanio
-# github.com/magodo/go-wasmww v0.0.0-20230913121652-f3c074162429
+# github.com/magodo/go-wasmww v0.0.0-20230914064632-eea21c04fd19
 ## explicit; go 1.21.0
 github.com/magodo/go-wasmww
 # github.com/magodo/go-webworkers v0.0.0-20230912130354-7cb7781df4ee

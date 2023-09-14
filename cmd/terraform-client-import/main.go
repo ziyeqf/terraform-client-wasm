@@ -51,13 +51,18 @@ type FlagSet struct {
 
 func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 	opts := tfclient.Option{
-		Logger: logger,
+		Logger:     logger,
+		SyncStdout: os.Stdout,
+		SyncStderr: os.Stderr,
 	}
 
 	if runtime.GOOS == "js" && runtime.GOARCH == "wasm" {
 		opts.WasmConn = &wasmww.WasmWebWorkerConn{
 			Name: fset.WasmName,
 			Path: fset.WasmPath,
+			Env: []string{
+				"TF_LOG=DEBUG",
+			},
 		}
 	} else {
 		opts.Cmd = exec.Command(fset.PluginPath)

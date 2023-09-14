@@ -387,7 +387,6 @@ func Serve(opts *ServeConfig) {
 
 func serverListener(connectStr string, jsSelf *wasmww.SelfConn) (net.Listener, error) {
 	eventCh, err := jsSelf.SetupConn()
-	//todo: not clear why, but it SetupConn() will break logger..
 	if err != nil {
 		return nil, fmt.Errorf("Error setting up wasm conn: %s\n", err)
 	}
