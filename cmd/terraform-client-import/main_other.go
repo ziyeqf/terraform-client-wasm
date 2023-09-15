@@ -1,13 +1,16 @@
-//go:build !wasm && !js
+//go:build !wasm
 
 package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/hashicorp/go-hclog"
+	"github.com/magodo/terraform-client-go/tfclient/configschema"
+	ctyjson "github.com/zclconf/go-cty/cty/json"
 )
 
 func main() {
@@ -30,8 +33,17 @@ func main() {
 		Name:   filepath.Base(fset.PluginPath),
 	})
 
-	if err := realMain(logger, fset); err != nil {
+	state, schema, err := importResource(logger, fset)
+	if err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
+
+	b, err := ctyjson.Marshal(*state, configschema.SchemaBlockImpliedType((*schema).Block))
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+
+	fmt.Println(b)
 }

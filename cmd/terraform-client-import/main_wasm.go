@@ -8,6 +8,10 @@ import (
 	"syscall/js"
 
 	"github.com/hashicorp/go-hclog"
+	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/magodo/tfadd/tfadd"
+	"github.com/magodo/tfstate"
+	"github.com/zclconf/go-cty/cty"
 )
 
 type fn func(this js.Value, args []js.Value) (any, error)
@@ -66,9 +70,30 @@ func wasmMain(_ js.Value, args []js.Value) (any, error) {
 		Level:  hclog.LevelFromString(fset.LogLevel),
 		Name:   filepath.Base(fset.PluginPath),
 	})
-	res, err := realMain(logger, fset)
+	state, schema, err := importResource(logger, fset)
 	if err != nil {
 		return nil, err
 	}
-	return js.ValueOf(res), err
+
+	tfAddr := fset.ResourceType + ".example"
+	hcl, err := json2hcl(tfAddr, fset.WasmName, *state, fset.ResourceType, *schema)
+	return js.ValueOf(hcl), err
+}
+
+func json2hcl(tfAddress string, provider string, state cty.Value, rt string, schema tfjson.Schema) (string, error) {
+	b, err := tfadd.GenerateForOneResource(
+		&schema,
+		tfstate.StateResource{
+			Mode:         tfjson.ManagedResourceMode,
+			Address:      tfAddress,
+			Type:         rt,
+			ProviderName: provider,
+			Value:        state,
+		},
+		false)
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }

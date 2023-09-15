@@ -1,7 +1,7 @@
-# github.com/agext/levenshtein v1.2.1
+# github.com/agext/levenshtein v1.2.2
 ## explicit
 github.com/agext/levenshtein
-# github.com/apparentlymart/go-dump v0.0.0-20180507223929-23540a00eaa3
+# github.com/apparentlymart/go-dump v0.0.0-20190214190832-042adf3cf4a0
 ## explicit
 github.com/apparentlymart/go-dump/dump
 # github.com/apparentlymart/go-textseg/v13 v13.0.0
@@ -43,20 +43,25 @@ github.com/hack-pad/safejs/internal/stackerr
 # github.com/hashicorp/go-hclog v1.2.1
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
-# github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230915034725-12ef0b529fe4
+# github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230915055543-802671ed701d
 ## explicit; go 1.21.1
 github.com/hashicorp/go-plugin
 github.com/hashicorp/go-plugin/internal/plugin
 # github.com/hashicorp/go-version v1.6.0
 ## explicit
 github.com/hashicorp/go-version
-# github.com/hashicorp/hcl/v2 v2.11.1
-## explicit; go 1.12
+# github.com/hashicorp/hcl/v2 v2.13.0
+## explicit; go 1.18
 github.com/hashicorp/hcl/v2
 github.com/hashicorp/hcl/v2/ext/customdecode
 github.com/hashicorp/hcl/v2/hcldec
 github.com/hashicorp/hcl/v2/hclsyntax
 github.com/hashicorp/hcl/v2/hcltest
+github.com/hashicorp/hcl/v2/hclwrite
+# github.com/hashicorp/terraform-exec v0.17.2
+## explicit; go 1.17
+github.com/hashicorp/terraform-exec/internal/version
+github.com/hashicorp/terraform-exec/tfexec
 # github.com/hashicorp/terraform-json v0.16.0
 ## explicit; go 1.18
 github.com/hashicorp/terraform-json
@@ -65,9 +70,13 @@ github.com/hashicorp/terraform-json
 github.com/hashicorp/terraform-plugin-go/tfprotov5
 github.com/hashicorp/terraform-plugin-go/tfprotov6
 github.com/hashicorp/terraform-plugin-go/tftypes
-# github.com/hashicorp/yamux v0.0.0-20180604194846-3520598351bb
+# github.com/hashicorp/yamux v0.0.0-20181012175058-2f1d1f20f75d
 ## explicit
 github.com/hashicorp/yamux
+# github.com/kr/pretty v0.2.1
+## explicit; go 1.12
+# github.com/kr/text v0.2.0
+## explicit
 # github.com/magodo/chanio v0.0.0-20230905063744-5f1bf45eacbc
 ## explicit; go 1.21.0
 github.com/magodo/chanio
@@ -79,6 +88,22 @@ github.com/magodo/go-wasmww
 github.com/magodo/go-webworkers/sharedworker
 github.com/magodo/go-webworkers/types
 github.com/magodo/go-webworkers/worker
+# github.com/magodo/tfadd v0.10.1-0.20230714031726-fd50ee69a579
+## explicit; go 1.18
+github.com/magodo/tfadd/addr
+github.com/magodo/tfadd/providers/aws
+github.com/magodo/tfadd/providers/azurerm
+github.com/magodo/tfadd/providers/google
+github.com/magodo/tfadd/schema
+github.com/magodo/tfadd/tfadd
+github.com/magodo/tfadd/tfadd/internal
+# github.com/magodo/tfpluginschema v0.0.0-20220905090502-2d6a05ebaefd
+## explicit; go 1.18
+github.com/magodo/tfpluginschema/schema
+# github.com/magodo/tfstate v0.0.0-20220409052014-9b9568dda918
+## explicit; go 1.18
+github.com/magodo/tfstate
+github.com/magodo/tfstate/terraform/jsonschema
 # github.com/mattn/go-colorable v0.1.12
 ## explicit; go 1.13
 github.com/mattn/go-colorable
@@ -88,7 +113,7 @@ github.com/mattn/go-isatty
 # github.com/mitchellh/go-testing-interface v1.14.1
 ## explicit; go 1.14
 github.com/mitchellh/go-testing-interface
-# github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7
+# github.com/mitchellh/go-wordwrap v1.0.0
 ## explicit
 github.com/mitchellh/go-wordwrap
 # github.com/oklog/run v1.0.0
@@ -257,3 +282,5 @@ google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/emptypb
 google.golang.org/protobuf/types/known/timestamppb
 google.golang.org/protobuf/types/pluginpb
+# gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
+## explicit; go 1.11

@@ -13,6 +13,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/magodo/go-wasmww"
 	"github.com/magodo/terraform-client-go/tfclient"
 	"github.com/magodo/terraform-client-go/tfclient/configschema"
@@ -49,7 +50,7 @@ type FlagSet struct {
 	TimeoutSec   int
 }
 
-func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
+func importResource(logger hclog.Logger, fset FlagSet) (tfState *cty.Value, schema *tfjson.Schema, err error) {
 	opts := tfclient.Option{
 		Logger:     logger,
 		SyncStdout: os.Stdout,
@@ -70,7 +71,7 @@ func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 
 	reattach, err := parseReattach(os.Getenv("TF_REATTACH_PROVIDERS"))
 	if err != nil {
-		return "", err
+		return nil, nil, err
 	}
 	if reattach != nil {
 		opts.Cmd = nil
@@ -79,7 +80,7 @@ func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 
 	c, err := tfclient.New(opts)
 	if err != nil {
-		return "", err
+		return nil, nil, err
 	}
 	defer c.Close()
 
@@ -92,19 +93,19 @@ func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 
 	schResp, diags := c.GetProviderSchema()
 	if err := showDiags(logger, diags); err != nil {
-		return "", err
+		return nil, nil, err
 	}
 
 	config, err := ctyjson.Unmarshal([]byte(fset.ProviderCfg), configschema.SchemaBlockImpliedType(schResp.Provider.Block))
 	if err != nil {
-		return "", err
+		return nil, nil, err
 	}
 
 	_, diags = c.ConfigureProvider(ctx, typ.ConfigureProviderRequest{
 		Config: config,
 	})
 	if err := showDiags(logger, diags); err != nil {
-		return "", err
+		return nil, nil, err
 	}
 
 	importResp, diags := c.ImportResourceState(ctx, typ.ImportResourceStateRequest{
@@ -112,11 +113,11 @@ func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 		ID:       fset.ResourceId,
 	})
 	if err := showDiags(logger, diags); err != nil {
-		return "", err
+		return nil, nil, err
 	}
 
 	if len(importResp.ImportedResources) != 1 {
-		return "", fmt.Errorf("expect 1 resource, got=%d", len(importResp.ImportedResources))
+		return nil, nil, fmt.Errorf("expect 1 resource, got=%d", len(importResp.ImportedResources))
 	}
 	res := importResp.ImportedResources[0]
 
@@ -125,15 +126,15 @@ func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 		for _, patch := range fset.StatePatches {
 			b, err := ctyjson.Marshal(state, state.Type())
 			if err != nil {
-				return "", fmt.Errorf("marshalling the state: %v", err)
+				return nil, nil, fmt.Errorf("marshalling the state: %v", err)
 			}
 			nb, err := patch.Apply(b)
 			if err != nil {
-				return "", fmt.Errorf("patching the state %s: %v", string(b), err)
+				return nil, nil, fmt.Errorf("patching the state %s: %v", string(b), err)
 			}
 			state, err = ctyjson.Unmarshal(nb, state.Type())
 			if err != nil {
-				return "", fmt.Errorf("unmarshalling the patched state: %v", err)
+				return nil, nil, fmt.Errorf("unmarshalling the patched state: %v", err)
 			}
 		}
 	}
@@ -145,15 +146,15 @@ func realMain(logger hclog.Logger, fset FlagSet) (string, error) {
 		ProviderMeta: cty.Value{},
 	})
 	if err := showDiags(logger, diags); err != nil {
-		return "", err
+		return nil, nil, err
 	}
 
-	b, err := ctyjson.Marshal(readResp.NewState, configschema.SchemaBlockImpliedType(schResp.ResourceTypes[fset.ResourceType].Block))
-	if err != nil {
-		return "", err
+	rsch, ok := schResp.ResourceTypes[fset.ResourceType]
+	if !ok {
+		return nil, nil, fmt.Errorf("resource type %q not found in the provider schema", fset.ResourceType)
 	}
 
-	return string(b), nil
+	return &readResp.NewState, &rsch, nil
 }
 
 func showDiags(logger hclog.Logger, diags typ.Diagnostics) error {
