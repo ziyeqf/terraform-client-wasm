@@ -54,8 +54,8 @@ github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348 h1:MtvEpTB6LX3v
 github.com/kylelemons/godebug v0.0.0-20170820004349-d65d576e9348/go.mod h1:B69LEHPfb2qLo0BaaOLcbitczOKLWTsrBG9LczfCD4k=
 github.com/magodo/chanio v0.0.0-20230905063744-5f1bf45eacbc h1:OA/l08Abuwg0v3g6piwgnHzK8QcV+rgUwrmvKSSVT28=
 github.com/magodo/chanio v0.0.0-20230905063744-5f1bf45eacbc/go.mod h1:h8znBXxSpGVpiLc79RwAaMndx+d3DrnynGlmbxPWcX8=
-github.com/magodo/go-wasmww v0.0.0-20230914064632-eea21c04fd19 h1:spNynARmmILlTjkiULzQdx3eZDT5SBpWrQJMj1O0fZ0=
-github.com/magodo/go-wasmww v0.0.0-20230914064632-eea21c04fd19/go.mod h1:3Da4y024Wt+xMHGKEdkLx8wBn4ZF0wC4XtzHKzNCLjA=
+github.com/magodo/go-wasmww v0.0.0-20230914104912-44ee4b8129d0 h1:SfYASTr54LsLpjaMJednJND9DEmBtJIR58j2nF0PoqM=
+github.com/magodo/go-wasmww v0.0.0-20230914104912-44ee4b8129d0/go.mod h1:3Da4y024Wt+xMHGKEdkLx8wBn4ZF0wC4XtzHKzNCLjA=
 github.com/magodo/go-webworkers v0.0.0-20230912130354-7cb7781df4ee h1:XaNsxpodBifEAUm5iFCT0oxFw+OVmlCRxwBfqOd/Gi8=
 github.com/magodo/go-webworkers v0.0.0-20230912130354-7cb7781df4ee/go.mod h1:75pYYUWzQZKwI7HXgCOD6CAqEvNhln+yyxV3vIJWxaE=
 github.com/mattn/go-colorable v0.1.9/go.mod h1:u6P/XSegPjTcexA+o6vUJrdnUu04hMope9wVRipJSqc=
@@ -96,8 +96,8 @@ github.com/zclconf/go-cty v1.8.0/go.mod h1:vVKLxnk3puL4qRAv72AO+W99LUD4da90g3uUA
 github.com/zclconf/go-cty v1.13.0 h1:It5dfKTTZHe9aeppbNOda3mN7Ag7sg6QkBNm6TkyFa0=
 github.com/zclconf/go-cty v1.13.0/go.mod h1:YKQzy/7pZ7iq2jNFzy5go57xdxdWoLLpaEp4u238AE0=
 github.com/zclconf/go-cty-debug v0.0.0-20191215020915-b22d67c1ba0b/go.mod h1:ZRKQfBXbGkpdV6QMzT3rU1kSTAnfu1dO8dPKjYprgj8=
-github.com/ziyeqf/go-plugin-wasm v0.0.0-20230914074008-4c286047f11a h1:4GXxsdlfI9wiD4529B+Ze5zzZK7zMuTzPKLBxrtnWIA=
-github.com/ziyeqf/go-plugin-wasm v0.0.0-20230914074008-4c286047f11a/go.mod h1:YghhMKy+X94Vbsvzva1IN4jMSgVuXGnglzbBn1F+hUU=
+github.com/ziyeqf/go-plugin-wasm v0.0.0-20230915034725-12ef0b529fe4 h1:W2KV4B7JDPc+vDYEt1NlWB1xVH5BonRHG4sq99UJzAI=
+github.com/ziyeqf/go-plugin-wasm v0.0.0-20230915034725-12ef0b529fe4/go.mod h1:LXDz8Sf710tsfelpVIVZpJjUXsg4TQ3w6u+bbell1B0=
 github.com/ziyeqf/go-wasm-conn v0.0.0-20230913032811-790d31e96750 h1:jOghT0wyWsu1/Cq8O7t14IgBB7E7UbzUtG0Us04d3os=
 github.com/ziyeqf/go-wasm-conn v0.0.0-20230913032811-790d31e96750/go.mod h1:jvqXOxn9o+Lt5VWfpPrrjt2yBjKiQ3F48ve4jSDChu8=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=

@@ -12,7 +12,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.11.1
 	github.com/hashicorp/terraform-json v0.16.0
 	github.com/hashicorp/terraform-plugin-go v0.14.3
-	github.com/magodo/go-wasmww v0.0.0-20230914064632-eea21c04fd19
+	github.com/magodo/go-wasmww v0.0.0-20230914104912-44ee4b8129d0
 	github.com/zclconf/go-cty v1.13.0
 	google.golang.org/grpc v1.53.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
@@ -48,4 +48,4 @@ require (
 	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 )
 
-replace github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230914074008-4c286047f11a
+replace github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230915034725-12ef0b529fe4
