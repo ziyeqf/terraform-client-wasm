@@ -11,7 +11,6 @@ import (
 type WasmConn struct {
 	readBuf         bytes.Buffer
 	readChan        chan []byte
-	msgChan         <-chan WasmMsg
 	postMessageFunc PostFunc
 
 	connId string
@@ -20,32 +19,19 @@ type WasmConn struct {
 	readDDL, writeDDL time.Time
 }
 
-func NewWasmConn(connId string, postMessageFunc PostFunc, msgChan <-chan WasmMsg) *WasmConn {
+func NewWasmConn(connId string, postMessageFunc PostFunc, msgChan <-chan WasmConnMessage) *WasmConn {
 	conn := &WasmConn{
 		connId:          connId,
 		readChan:        make(chan []byte, 4096),
-		msgChan:         msgChan,
 		postMessageFunc: postMessageFunc,
 		done:            false,
 	}
 
-	go func(msgChan <-chan WasmMsg) {
+	go func(msgChan <-chan WasmConnMessage) {
 		for msg := range msgChan {
-			switch msg := msg.(type) {
-			case *wasmConnClose:
-				if msg.ConnId == conn.connId {
-					conn.Close()
-					return
-				}
-			case *WasmConnMessage:
-
-				if msg.ConnId == conn.connId {
-					conn.readChan <- msg.Bytes
-					continue
-				}
-				if conn.done {
-					return
-				}
+			if msg.ConnId == conn.connId {
+				conn.readChan <- msg.Bytes
+				continue
 			}
 		}
 	}(msgChan)
@@ -124,12 +110,10 @@ func (conn *WasmConn) Write(p []byte) (n int, err error) {
 	}
 	postCh := make(chan res, 1)
 	go func() {
-		rawMsg := RawMsgFromWasmMsg(&WasmConnMessage{
+		if err := conn.postMessageFunc(EncodeWasmMsg(WasmConnMessage{
 			ConnId: conn.connId,
 			Bytes:  p,
-		})
-
-		if err := conn.postMessageFunc(rawMsg.JsMessage()); err != nil {
+		})); err != nil {
 			postCh <- res{0, err}
 			return
 		}
@@ -148,11 +132,12 @@ func (conn *WasmConn) Write(p []byte) (n int, err error) {
 }
 
 func (conn *WasmConn) Close() error {
-	rawMsg := RawMsgFromWasmMsg(&wasmConnClose{
-		ConnId: conn.connId,
-	})
 	conn.done = true
-	if err := conn.postMessageFunc(rawMsg.JsMessage()); err != nil {
+	if err := conn.postMessageFunc(EncodeWasmMsg(
+		wasmConnClose{
+			ConnId: conn.connId,
+		},
+	)); err != nil {
 		return err
 	}
 	return nil

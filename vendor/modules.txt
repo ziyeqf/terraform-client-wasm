@@ -43,7 +43,7 @@ github.com/hack-pad/safejs/internal/stackerr
 # github.com/hashicorp/go-hclog v1.2.1
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
-# github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230915055543-802671ed701d
+# github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230918025613-56077b717fe0
 ## explicit; go 1.21.1
 github.com/hashicorp/go-plugin
 github.com/hashicorp/go-plugin/internal/plugin
@@ -151,7 +151,7 @@ github.com/zclconf/go-cty/cty/gocty
 github.com/zclconf/go-cty/cty/json
 github.com/zclconf/go-cty/cty/msgpack
 github.com/zclconf/go-cty/cty/set
-# github.com/ziyeqf/go-wasm-conn v0.0.0-20230913032811-790d31e96750
+# github.com/ziyeqf/go-wasm-conn v0.0.0-20230915102353-d965ee4771e8
 ## explicit; go 1.21.1
 github.com/ziyeqf/go-wasm-conn
 # golang.org/x/net v0.7.0

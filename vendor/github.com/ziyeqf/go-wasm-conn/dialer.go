@@ -28,47 +28,48 @@ func (d *Dialer) Dial() (net.Conn, error) {
 	go func() {
 		for event := range d.workerConn.EventChannel() {
 			if data, err := event.Data(); err == nil {
-				if msg, err := ParseRawMsg(data); err == nil {
-					if resp, ok := msg.(*WasmConnResponse); ok {
-						if resp.ConnId == connId {
-							resp := RawMsgFromWasmMsg(&WasmConnResponse{
-								ConnId: connId,
-							})
-							if err := d.workerConn.PostMessage(resp.JsMessage()); err != nil {
-								panic(err)
-							}
-							connReceived <- struct{}{}
-							return
+				if resp, err := ParseWasmMsg[WasmConnResponse](data); err == nil {
+					if resp.ConnId == connId {
+						if err := d.workerConn.PostMessage(EncodeWasmMsg(WasmConnResponse{
+							ConnId: connId,
+						})); err != nil {
+							panic(err)
 						}
+						connReceived <- struct{}{}
+						return
 					}
 				}
 			}
 		}
 	}()
 
-	connectMsg := RawMsgFromWasmMsg(&wasmConnRequest{
+	if err := d.workerConn.PostMessage(EncodeWasmMsg(wasmConnRequest{
 		ConnectStr: d.connectStr,
 		ConnId:     connId,
-	})
-
-	if err := d.workerConn.PostMessage(connectMsg.JsMessage()); err != nil {
+	})); err != nil {
 		panic(err)
 	}
 
 	<-connReceived
 
-	return NewWasmConn(connId, d.workerConn.PostMessage, startMsgChanProxy(d.workerConn.EventChannel())), nil
+	msgCh := make(chan WasmConnMessage, 0)
+	conn := NewWasmConn(connId, d.workerConn.PostMessage, msgCh)
+	startMsgChanProxy(msgCh, d.workerConn.EventChannel(), conn)
+	return conn, nil
 }
 
-func startMsgChanProxy(eventChan <-chan types.MessageEventMessage) <-chan WasmMsg {
-	msgCh := make(chan WasmMsg, 0)
+func startMsgChanProxy(msgCh chan WasmConnMessage, eventChan <-chan types.MessageEventMessage, conn *WasmConn) <-chan WasmConnMessage {
 	go func() {
 		for event := range eventChan {
 			if data, err := event.Data(); err == nil {
-				if msg, err := ParseRawMsg(data); err == nil {
-					switch msg := msg.(type) {
-					case *WasmConnMessage:
-						msgCh <- msg
+				if msg, err := ParseWasmMsg[WasmConnMessage](data); err == nil {
+					msgCh <- *msg
+				}
+				if c, err := ParseWasmMsg[wasmConnClose](data); err == nil {
+					if c.ConnId == conn.connId {
+						conn.done = true
+						close(msgCh)
+						return
 					}
 				}
 			}

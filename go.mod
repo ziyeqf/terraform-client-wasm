@@ -46,7 +46,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser v0.1.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	github.com/ziyeqf/go-wasm-conn v0.0.0-20230913032811-790d31e96750 // indirect
+	github.com/ziyeqf/go-wasm-conn v0.0.0-20230915102353-d965ee4771e8 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
@@ -55,4 +55,4 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )
 
-replace github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230915055543-802671ed701d
+replace github.com/hashicorp/go-plugin v1.4.8 => github.com/ziyeqf/go-plugin-wasm v0.0.0-20230918025613-56077b717fe0
