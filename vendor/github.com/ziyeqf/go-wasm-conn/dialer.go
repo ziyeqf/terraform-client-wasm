@@ -28,9 +28,9 @@ func (d *Dialer) Dial() (net.Conn, error) {
 	go func() {
 		for event := range d.workerConn.EventChannel() {
 			if data, err := event.Data(); err == nil {
-				if resp, err := ParseWasmMsg[WasmConnResponse](data); err == nil {
+				if resp, err := ParseWasmMsg[Response](data); err == nil {
 					if resp.ConnId == connId {
-						if err := d.workerConn.PostMessage(EncodeWasmMsg(WasmConnResponse{
+						if err := d.workerConn.PostMessage(EncodeWasmMsg(Response{
 							ConnId: connId,
 						})); err != nil {
 							panic(err)
@@ -43,7 +43,7 @@ func (d *Dialer) Dial() (net.Conn, error) {
 		}
 	}()
 
-	if err := d.workerConn.PostMessage(EncodeWasmMsg(wasmConnRequest{
+	if err := d.workerConn.PostMessage(EncodeWasmMsg(Request{
 		ConnectStr: d.connectStr,
 		ConnId:     connId,
 	})); err != nil {
@@ -52,20 +52,23 @@ func (d *Dialer) Dial() (net.Conn, error) {
 
 	<-connReceived
 
-	msgCh := make(chan WasmConnMessage, 0)
+	msgCh := make(chan Message, 0)
 	conn := NewWasmConn(connId, d.workerConn.PostMessage, msgCh)
 	startMsgChanProxy(msgCh, d.workerConn.EventChannel(), conn)
 	return conn, nil
 }
 
-func startMsgChanProxy(msgCh chan WasmConnMessage, eventChan <-chan types.MessageEventMessage, conn *WasmConn) <-chan WasmConnMessage {
+func startMsgChanProxy(msgCh chan Message, eventChan <-chan types.MessageEventMessage, conn *WasmConn) <-chan Message {
 	go func() {
 		for event := range eventChan {
 			if data, err := event.Data(); err == nil {
-				if msg, err := ParseWasmMsg[WasmConnMessage](data); err == nil {
-					msgCh <- *msg
+				if msg, err := ParseWasmMsg[Message](data); err == nil {
+					if msg.ConnId == conn.connId {
+						msgCh <- *msg
+						continue
+					}
 				}
-				if c, err := ParseWasmMsg[wasmConnClose](data); err == nil {
+				if c, err := ParseWasmMsg[Close](data); err == nil {
 					if c.ConnId == conn.connId {
 						conn.done = true
 						close(msgCh)

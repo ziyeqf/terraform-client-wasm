@@ -80,7 +80,7 @@ github.com/hashicorp/yamux
 # github.com/magodo/chanio v0.0.0-20230905063744-5f1bf45eacbc
 ## explicit; go 1.21.0
 github.com/magodo/chanio
-# github.com/magodo/go-wasmww v0.0.0-20230914104912-44ee4b8129d0
+# github.com/magodo/go-wasmww v0.0.0-20230915102700-28235f77bac4
 ## explicit; go 1.21.0
 github.com/magodo/go-wasmww
 # github.com/magodo/go-webworkers v0.0.0-20230912130354-7cb7781df4ee
@@ -151,7 +151,7 @@ github.com/zclconf/go-cty/cty/gocty
 github.com/zclconf/go-cty/cty/json
 github.com/zclconf/go-cty/cty/msgpack
 github.com/zclconf/go-cty/cty/set
-# github.com/ziyeqf/go-wasm-conn v0.0.0-20230915102353-d965ee4771e8
+# github.com/ziyeqf/go-wasm-conn v0.0.0-20230918060937-42c684f8a9fd
 ## explicit; go 1.21.1
 github.com/ziyeqf/go-wasm-conn
 # golang.org/x/net v0.7.0

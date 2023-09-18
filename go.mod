@@ -12,7 +12,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.13.0
 	github.com/hashicorp/terraform-json v0.16.0
 	github.com/hashicorp/terraform-plugin-go v0.14.3
-	github.com/magodo/go-wasmww v0.0.0-20230914104912-44ee4b8129d0
+	github.com/magodo/go-wasmww v0.0.0-20230915102700-28235f77bac4
 	github.com/magodo/tfadd v0.10.1-0.20230714031726-fd50ee69a579
 	github.com/magodo/tfstate v0.0.0-20220409052014-9b9568dda918
 	github.com/zclconf/go-cty v1.13.0
@@ -46,7 +46,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser v0.1.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	github.com/ziyeqf/go-wasm-conn v0.0.0-20230915102353-d965ee4771e8 // indirect
+	github.com/ziyeqf/go-wasm-conn v0.0.0-20230918060937-42c684f8a9fd // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect

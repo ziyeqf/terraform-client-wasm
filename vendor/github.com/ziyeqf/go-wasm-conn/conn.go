@@ -19,15 +19,15 @@ type WasmConn struct {
 	readDDL, writeDDL time.Time
 }
 
-func NewWasmConn(connId string, postMessageFunc PostFunc, msgChan <-chan WasmConnMessage) *WasmConn {
+func NewWasmConn(connId string, postMessageFunc PostFunc, msgChan <-chan Message) *WasmConn {
 	conn := &WasmConn{
 		connId:          connId,
-		readChan:        make(chan []byte, 4096),
+		readChan:        make(chan []byte),
 		postMessageFunc: postMessageFunc,
 		done:            false,
 	}
 
-	go func(msgChan <-chan WasmConnMessage) {
+	go func(msgChan <-chan Message) {
 		for msg := range msgChan {
 			if msg.ConnId == conn.connId {
 				conn.readChan <- msg.Bytes
@@ -110,7 +110,7 @@ func (conn *WasmConn) Write(p []byte) (n int, err error) {
 	}
 	postCh := make(chan res, 1)
 	go func() {
-		if err := conn.postMessageFunc(EncodeWasmMsg(WasmConnMessage{
+		if err := conn.postMessageFunc(EncodeWasmMsg(Message{
 			ConnId: conn.connId,
 			Bytes:  p,
 		})); err != nil {
@@ -134,7 +134,7 @@ func (conn *WasmConn) Write(p []byte) (n int, err error) {
 func (conn *WasmConn) Close() error {
 	conn.done = true
 	if err := conn.postMessageFunc(EncodeWasmMsg(
-		wasmConnClose{
+		Close{
 			ConnId: conn.connId,
 		},
 	)); err != nil {

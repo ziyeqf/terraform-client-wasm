@@ -1,8 +1,7 @@
 package wasmconn
 
 import (
-	"bytes"
-	"encoding/gob"
+	"encoding/json"
 	"log"
 	"syscall/js"
 
@@ -17,19 +16,17 @@ type PostFunc func(data safejs.Value, transfers []safejs.Value) error
 type MsgChan[T WasmMsg] chan T
 
 type WasmMsg interface {
-	wasmConnRequest | WasmConnResponse | wasmConnClose | WasmConnMessage
+	Request | Response | Close | Message
 }
 
 func EncodeWasmMsg[T WasmMsg](m T) (safejs.Value, []safejs.Value) {
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(m)
+	buf, err := json.Marshal(m)
 	if err != nil {
 		log.Fatal("encode error:", err)
 	}
 
-	jsArray := js.Global().Get("Uint8Array").New(buf.Len())
-	js.CopyBytesToJS(jsArray, buf.Bytes())
+	jsArray := js.Global().Get("Uint8Array").New(len(buf))
+	js.CopyBytesToJS(jsArray, buf)
 	safeArray := safejs.Safe(jsArray)
 	return safeArray, []safejs.Value{}
 }
@@ -45,9 +42,7 @@ func ParseWasmMsg[T WasmMsg](jsMsg safejs.Value) (*T, error) {
 	}
 	var msg T
 
-	dec := gob.NewDecoder(bytes.NewBuffer(buffer))
-	err = dec.Decode(&msg)
-	if err != nil {
+	if err := json.Unmarshal(buffer, &msg); err != nil {
 		return nil, err
 	}
 
